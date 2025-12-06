@@ -7,7 +7,6 @@ namespace ClothStore.Core.Entities
     public class Order : BaseEntity
     {
         public Guid UserId { get; set; }
-        public Guid AddressId { get; set; }
         public string OrderNumber { get; set; } = string.Empty;
         public decimal SubTotal { get; set; }
         public decimal ShippingCost { get; set; }
@@ -19,9 +18,6 @@ namespace ClothStore.Core.Entities
 
         [ForeignKey("UserId")]
         public AspNetUser User { get; set; } = null!;
-
-        [ForeignKey("AddressId")]
-        public Address Address { get; set; } = null!;
 
         [InverseProperty("Order")]
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();

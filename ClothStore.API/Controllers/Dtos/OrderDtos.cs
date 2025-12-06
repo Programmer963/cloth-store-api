@@ -5,9 +5,6 @@ namespace ClothStore.API.Controllers.Dtos
     public class CreateOrderDto
     {
         [Required]
-        public Guid AddressId { get; set; }
-
-        [Required]
         public decimal SubTotal { get; set; }
 
         [Required]

@@ -8,6 +8,7 @@ using ClothStore.Core.Entities;
 using ClothStore.API.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductImageService, ProductImageService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IUploadService, UploadService>();
 builder.Services.AddScoped<JwtHelper>();
 
@@ -67,10 +68,31 @@ builder.Services.AddAuthentication(options =>
             ValidAudience = jwtIssuer,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var authHeader = context.Request.Headers["Authorization"].ToString();
+                if (!string.IsNullOrWhiteSpace(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                {
+                    context.Token = authHeader.Substring("Bearer ".Length).Trim();
+                }
+                return Task.CompletedTask;
+            },
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"JWT authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            }
+        };
     });
 
 // Controllers
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -141,6 +163,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure pipeline
+app.UseCors("AllowAngularApp");
+
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -148,8 +172,6 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
     c.DisplayRequestDuration();
 });
-
-app.UseCors("AllowAngularApp");
 
 app.UseHttpsRedirection();
 

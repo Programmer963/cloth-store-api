@@ -20,7 +20,6 @@ namespace ClothStore.Application.Services
         public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(Guid userId)
         {
             return await _dbSet
-                .Include(o => o.Address)
                 .Include(o => o.OrderItems)
                     .ThenInclude(oi => oi.Product)
                 .Where(x => !x.IsDeleted && x.UserId == userId)
@@ -31,7 +30,6 @@ namespace ClothStore.Application.Services
         public async Task<Order?> GetOrderByOrderNumberAsync(string orderNumber)
         {
             return await _dbSet
-                .Include(o => o.Address)
                 .Include(o => o.User)
                 .Include(o => o.OrderItems)
                     .ThenInclude(oi => oi.Product)

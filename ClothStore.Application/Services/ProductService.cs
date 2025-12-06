@@ -18,11 +18,32 @@ namespace ClothStore.Application.Services
         {
         }
 
+        public override async Task<IEnumerable<Product>> GetAllAsync()
+        {
+            return await _dbSet
+                .Include(p => p.Category)
+                .Include(p => p.Images.Where(pi => !pi.IsDeleted))
+                    .ThenInclude(pi => pi.Upload)
+                .Where(x => !x.IsDeleted)
+                .ToListAsync();
+        }
+
+        public override async Task<Product?> GetByIdAsync(Guid id)
+        {
+            var product = await _dbSet
+                .Include(p => p.Category)
+                .Include(p => p.Images.Where(pi => !pi.IsDeleted))
+                    .ThenInclude(pi => pi.Upload)
+                .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+            
+            return product;
+        }
+
         public async Task<IEnumerable<Product>> GetActiveProductsAsync()
         {
             return await _dbSet
                 .Include(p => p.Category)
-                .Include(p => p.Images)
+                .Include(p => p.Images.Where(pi => !pi.IsDeleted))
                     .ThenInclude(pi => pi.Upload)
                 .Where(x => !x.IsDeleted && x.IsActive)
                 .ToListAsync();
@@ -32,7 +53,7 @@ namespace ClothStore.Application.Services
         {
             return await _dbSet
                 .Include(p => p.Category)
-                .Include(p => p.Images)
+                .Include(p => p.Images.Where(pi => !pi.IsDeleted))
                     .ThenInclude(pi => pi.Upload)
                 .Where(x => !x.IsDeleted && x.IsActive && x.CategoryId == categoryId)
                 .ToListAsync();
@@ -42,7 +63,7 @@ namespace ClothStore.Application.Services
         {
             return await _dbSet
                 .Include(p => p.Category)
-                .Include(p => p.Images)
+                .Include(p => p.Images.Where(pi => !pi.IsDeleted))
                     .ThenInclude(pi => pi.Upload)
                 .Where(x => !x.IsDeleted && x.IsActive && x.IsFeatured)
                 .ToListAsync();
@@ -52,7 +73,7 @@ namespace ClothStore.Application.Services
         {
             return await _dbSet
                 .Include(p => p.Category)
-                .Include(p => p.Images)
+                .Include(p => p.Images.Where(pi => !pi.IsDeleted))
                     .ThenInclude(pi => pi.Upload)
                 .Where(x => !x.IsDeleted && x.IsActive &&
                     (x.Name.Contains(searchTerm) || 

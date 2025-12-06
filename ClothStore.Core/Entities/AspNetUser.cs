@@ -20,9 +20,6 @@ namespace ClothStore.Core.Entities
                 : UserName ?? string.Empty;
 
         [InverseProperty("User")]
-        public ICollection<Address> Addresses { get; set; } = new List<Address>();
-
-        [InverseProperty("User")]
         public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }

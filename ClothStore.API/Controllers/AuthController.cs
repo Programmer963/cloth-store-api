@@ -27,16 +27,21 @@ namespace ClothStore.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto model)
         {
+            if (string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Password))
+            {
+                return BadRequest(new { message = "Username and password are required." });
+            }
+
             var user = await _userManager.FindByNameAsync(model.Username);
             if (user == null)
             {
-                return Unauthorized(new { message = "User not found." });
+                return Unauthorized(new { message = "Invalid username or password." });
             }
 
             var passwordValid = await _userManager.CheckPasswordAsync(user, model.Password);
             if (!passwordValid)
             {
-                return Unauthorized(new { message = "Incorrect password." });
+                return Unauthorized(new { message = "Invalid username or password." });
             }
 
             var roles = await _userManager.GetRolesAsync(user);

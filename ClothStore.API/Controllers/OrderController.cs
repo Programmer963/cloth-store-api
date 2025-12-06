@@ -76,7 +76,6 @@ namespace ClothStore.API.Controllers
             var order = new Order
             {
                 UserId = userId,
-                AddressId = dto.AddressId,
                 SubTotal = dto.SubTotal,
                 ShippingCost = dto.ShippingCost,
                 Total = dto.Total,
