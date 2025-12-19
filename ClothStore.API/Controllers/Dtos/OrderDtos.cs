@@ -15,6 +15,10 @@ namespace ClothStore.API.Controllers.Dtos
 
         public string? Notes { get; set; }
 
+        public string? PaymentMethod { get; set; }
+
+        public string? CardLast4 { get; set; }
+
         [Required]
         [MinLength(1)]
         public List<OrderItemDto> Items { get; set; } = new List<OrderItemDto>();

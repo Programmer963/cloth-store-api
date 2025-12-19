@@ -11,7 +11,7 @@ namespace ClothStore.Core.Entities
         public decimal SubTotal { get; set; }
         public decimal ShippingCost { get; set; }
         public decimal Total { get; set; }
-        public string Status { get; set; } = "Pending"; // Pending, Processing, Shipped, Delivered, Cancelled
+        public string Status { get; set; } = "Pending"; // Pending, Paid, Processing, Shipped, Delivered, Cancelled
         public string? Notes { get; set; }
         public DateTime? ShippedDate { get; set; }
         public DateTime? DeliveredDate { get; set; }

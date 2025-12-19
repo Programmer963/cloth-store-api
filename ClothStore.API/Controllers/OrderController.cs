@@ -73,13 +73,19 @@ namespace ClothStore.API.Controllers
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString());
 
+            // Устанавливаем статус в зависимости от метода оплаты
+            // Если оплата картой, статус "Paid", иначе "Pending"
+            var status = !string.IsNullOrEmpty(dto.PaymentMethod) && dto.PaymentMethod.ToLower() == "card" 
+                ? "Paid" 
+                : "Pending";
+
             var order = new Order
             {
                 UserId = userId,
                 SubTotal = dto.SubTotal,
                 ShippingCost = dto.ShippingCost,
                 Total = dto.Total,
-                Status = "Pending",
+                Status = status,
                 Notes = dto.Notes
             };
 
